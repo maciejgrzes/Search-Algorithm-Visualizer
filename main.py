@@ -112,26 +112,21 @@ class QueueFrontier(StackFrontier):
 
 class Maze:
     def __init__(self, filename):
-        # Read file
         with open(filename) as f:
             contents = f.read()
 
-        # Validate start and goal
         if contents.count("S") != 1:
             raise ValueError("Maze must have exactly one start point")
         if contents.count("G") != 1:
             raise ValueError("Maze must have exactly one goal")
 
-        # Convert contents into a list of lines
         contents = contents.splitlines()
-        self.height = rows  # Predefined constant
-        self.width = columns  # Predefined constant
+        self.height = rows
+        self.width = columns
 
-        # Validate dimensions
         if len(contents) != self.height or any(len(line) != self.width for line in contents):
             raise ValueError("Maze dimensions do not match expected size")
 
-        # Convert maze to a numeric matrix
         self.grid = []
         self.start = None
         self.goal = None
@@ -142,14 +137,14 @@ class Maze:
                 char = contents[i][j]
                 if char == "S":
                     self.start = (i, j)
-                    row.append("S")  # Start is a valid path
+                    row.append("S")
                 elif char == "G":
                     self.goal = (i, j)
-                    row.append("G")  # Goal is a valid path
+                    row.append("G")
                 elif char == " ":
-                    row.append(0)  # Open path
+                    row.append(0)
                 else:
-                    row.append(1)  # Walls as 1 (blocked)
+                    row.append(1)
             self.grid.append(row)
 
         self.solution = None
@@ -164,7 +159,7 @@ class Maze:
             ("right", (row, col + 1))
         ]
 
-        valid_cells = {"S", "G", 0}  # Walkable cells
+        valid_cells = {"S", "G", 0} 
         return [
             (action, (r, c)) for action, (r, c) in directions
             if 0 <= r < self.height and 0 <= c < self.width and self.grid[r][c] in valid_cells
@@ -172,30 +167,22 @@ class Maze:
     
     def solve(self):
         """Finds a solution to maze, if one exists."""
-
-        # Keep track of number of states explored
         self.num_explored = 0
 
-        # Initialize frontier to just the starting position
         start = Node(state=self.start, parent=None, action=None)
         frontier = StackFrontier()
         frontier.add(start)
 
-        # Initialize an empty explored set
         self.explored = set()
 
-        # Keep looping until solution found
         while True:
 
-            # If nothing left in frontier, then no path
             if frontier.empty():
                 raise Exception("no solution")
 
-            # Choose a node from the frontier
             node = frontier.remove()
             self.num_explored += 1
-
-            # If node is the goal, then we have a solution
+            
             if node.state == self.goal:
                 actions = []
                 cells = []
@@ -207,18 +194,13 @@ class Maze:
                 cells.reverse()
                 self.solution = (actions, cells)
 
-                # Mark the solution path in the grid
                 for r, c in cells:
                     if (r, c) != self.start and (r, c) != self.goal:
-                        self.grid[r][c] = 2  # Mark solution path with 2
+                        self.grid[r][c] = 2 
+                break 
 
-                break  # Exit the loop once the solution is found
-
-
-            # Mark node as explored
             self.explored.add(node.state)
 
-            # Add neighbors to frontier
             for action, state in self.neighbors(node.state):
                 if not frontier.contains_state(state) and state not in self.explored:
                     child = Node(state=state, parent=node, action=action)
@@ -245,7 +227,7 @@ running = True
 while running:
     delta = clock.tick(60)/1000.0
     
-    # Processing events like key presses or window closure
+    # Processing events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -263,17 +245,9 @@ while running:
                 mazegen.save_maze_to_file(mazegen.generate_maze(columns, rows))
                 maze = Maze("maze.txt")
                 matrix = maze.grid
-
-
-
         manager.process_events(event)
-
     manager.update(delta)
-
-
-    # Draw the grid and refresh the screen
     drawMatrix(matrix)
     drawGridOutline()
     manager.draw_ui(surface)
     pygame.display.flip()
-
