@@ -1,0 +1,2 @@
+pygame-ce 2.5.5 (SDL 2.32.6, Python 3.13.5)
+pygame_gui (idk what version just go for the newest one)
