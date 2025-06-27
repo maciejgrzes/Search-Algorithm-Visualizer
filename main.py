@@ -196,7 +196,9 @@ class Maze:
 
                 for r, c in cells:
                     if (r, c) != self.start and (r, c) != self.goal:
-                        self.grid[r][c] = 2 
+                        self.grid[r][c] = 2
+                        drawMatrix(self.grid)
+                        pygame.display.flip()
                 break 
 
             self.explored.add(node.state)
@@ -239,8 +241,8 @@ while running:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == startButton:
                 maze.solve()
-                matrix = maze.grid
-                drawMatrix(matrix)
+                #matrix = maze.grid
+                #drawMatrix(matrix)
             if event.ui_element == newMaze:
                 mazegen.save_maze_to_file(mazegen.generate_maze(columns, rows))
                 maze = Maze("maze.txt")
